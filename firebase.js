@@ -4,7 +4,8 @@ import {
   collection,
   getDocs,
   addDoc,
-  doc
+  doc,
+  deleteDoc
 } from "firebase/firestore";
 
 import {
@@ -50,6 +51,7 @@ getDocs(colRefBlogs)
         <br> Skrevet av: ${doc.data().Author} 
         <br>
         <br>
+        <br>
         <br>`;
 
         parentElement.appendChild(newDiv);
@@ -61,16 +63,10 @@ getDocs(colRefBlogs)
     console.log(err.message);
 });
 
+//SLETTE BLOGGER
+const deleteBtn = document.querySelector('.delete')
 
 
-
-
-//LOGG INN OG REGISTRERING
-
-//LOGG INN
-const formWrapper = document.querySelector('.form-wrapper')
-const page2 = document.querySelector('.page2')
-const SignInForm = document.querySelector(".login");
 
 //sjekke om bruker er logget inn
 document.addEventListener('DOMContentLoaded', (e) => {
@@ -81,6 +77,14 @@ document.addEventListener('DOMContentLoaded', (e) => {
     logoutButton.classList.remove('d-none');
   }
 });
+
+//LOGG INN OG REGISTRERING
+
+//LOGG INN
+const formWrapper = document.querySelector('.form-wrapper')
+const page2 = document.querySelector('.page2')
+const SignInForm = document.querySelector(".login");
+
 
 
 SignInForm.addEventListener("submit", (e) => {
@@ -154,11 +158,7 @@ if(cred === 'sanne@bloggis.com') {
 };
 
 
-//DISPLAY BLOGGER TIL SPESIFIK PERSON
-
-
-
-//LEGG TIL SKO
+//LEGG TIL BLOGG
 const addForm = document.querySelector('.add');
 
 addForm.addEventListener('submit', (e) => {
@@ -174,3 +174,20 @@ addForm.addEventListener('submit', (e) => {
     });
 
 });
+
+//FJERNE BLOGGER
+const removeForm = document.querySelector('.remove');
+
+removeForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const docRef = doc(db, "Blogs", removeForm.bloggID.value)
+
+    deleteDoc(docRef)
+    .then (() => {
+        removeForm.reset()
+        console.log("item removed");
+    });
+
+});
+
