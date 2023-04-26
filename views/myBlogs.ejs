@@ -1,0 +1,71 @@
+<html lang="en">
+  <%- include("./partials/head.ejs") %>
+
+  <body>
+    <%- include("./partials/nav.ejs") %>
+
+    <div class="form-wrapper">
+      <h1>
+        Logg inn for å få tilgang til mine sider
+      </h1>
+
+      <br /><br />
+
+      <!-- LOGG INN -->
+
+      <form class="login form">
+        <input type="email" name="email" placeholder="email" />
+        <br />
+        <br />
+        <input type="password" name="password" placeholder="passord" />
+        <br />
+        <br />
+        <button class="btn btn-dark">Logg inn</button>
+      </form>
+
+      <!-- REGISTRER -->
+      <br> <br>
+      <h4>Har du ikke en konto? Opprett den her!</h4>
+      <form class="Register form">
+        <input type="username" name="email" placeholder="email" />
+        <br />
+        <br />
+        <input type="password" name="password" placeholder="passord" />
+        <br />
+        <br />
+        <button class="btn btn-dark">Opprett konto</button>
+      </form>
+    </div>
+
+
+
+
+    <section>
+      <div class="d-none page2">
+        <h1>Legg til blogg</h1>
+
+        <form class="add">
+          <label for="Title">Tittel:</label>
+          <br />
+          <input type="text" name="Title"required />
+          <br />
+
+          <label for="Author">Forfatter:</label>
+          <br />
+          <input type="text" name="Author" required />
+          <br />
+
+          <label for="Text">Innhold:</label>
+          <br />
+          <input type="text" name="Text" class="input-text" required />
+          <br />
+
+          <br />
+          <br />
+
+          <button class="btn btn-dark">Legg til ny blogg</button>
+        </form>
+      </div>
+    </section>
+  </body>
+</html>

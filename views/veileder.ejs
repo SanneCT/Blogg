@@ -1,0 +1,47 @@
+<html lang="en">
+  <%- include("./partials/head.ejs") %>
+
+  <body>
+    <%- include("./partials/nav.ejs") %>
+
+    <h2>Hvordan sette opp ny bruker i Linux med nøkkelpålogging</h2>
+
+    <br>
+    <p>1. Begynn med å lage brukeren med adduser kommandoen</p>
+    <img src="img/steg1.png">
+
+    <br> <br>
+    <p>2. Lag passordet til brukeren og følg stegene som kommer opp. Fyll inn informasjonen den ber om eller la den være tom.</p>
+    <img src="img/steg2.png">
+
+    <br> <br>
+    <p>3. Logg inn på den nye brukeren med su kommandoen</p>
+    <img src="img/steg3.png">
+
+    <br> <br>
+    <p>4. Generer public ssh key</p>
+    <img src="img/steg5.png">
+
+    <br> <br>
+    <p>5. La nøkkelen lagres i default mappen og lag et passphrase om du vil (du kan la den være tom)</p>
+    <img src="img/steg6.png">
+
+    <br> <br>
+    <p>6. Gå inn i ssh mappen og rediger authorized_keys. inni authoized_keys 
+      kopierer du inn public keyen til brukeren som skal kunne logge seg på. Trykk ctrl + O 
+      for å lagre edringene og ctrl + X for å gå ut av filen.</p>
+    <img src="img/steg7.png">
+
+    <br> <br>
+    <p>7. Skriv logout for å logge ut av brukeren</p>
+    <img src="img/steg75.png">
+
+    <br> <br>
+    <p>8. Bruk usermod for å redigere rettighetene til brukeren. Du kan sjekke om det funker ved å skrive groups 
+      og brukernavnet for å se hvilke grupper brukeren er en del av. På bilde ser vi at geir brukeren har blitt lagt til i sudo gruppen</p>
+    <img src="img/steg8.png">
+
+  
+
+  </body>
+</html>
