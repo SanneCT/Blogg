@@ -5,71 +5,74 @@ import {
   getDocs,
   addDoc,
   doc,
-  deleteDoc
+  deleteDoc,
+  updateDoc,
+  onSnapshot,
+  getDoc
 } from "firebase/firestore";
 
 import {
-    getAuth, 
-    createUserWithEmailAndPassword, 
-    signOut,
-    signInWithEmailAndPassword
+  getAuth,
+  createUserWithEmailAndPassword,
+  signOut,
+  signInWithEmailAndPassword
 } from 'firebase/auth'
 
 const firebaseConfig = {
-    apiKey: "AIzaSyALRpbFfVILVzQC_sC_QfTM4S0k_44-QQk",
-    authDomain: "minblogg-4b922.firebaseapp.com",
-    projectId: "minblogg-4b922",
-    storageBucket: "minblogg-4b922.appspot.com",
-    messagingSenderId: "23369904460",
-    appId: "1:23369904460:web:e564988f54f9b03923dfe9"
-  };
+  apiKey: "AIzaSyALRpbFfVILVzQC_sC_QfTM4S0k_44-QQk",
+  authDomain: "minblogg-4b922.firebaseapp.com",
+  projectId: "minblogg-4b922",
+  storageBucket: "minblogg-4b922.appspot.com",
+  messagingSenderId: "23369904460",
+  appId: "1:23369904460:web:e564988f54f9b03923dfe9"
+};
 
-  // Initialize Firebase
+// Initialize Firebase
 initializeApp(firebaseConfig);
 
 //init service
 const db = getFirestore();
 const auth = getAuth();
 
+//LOGG INN
+const formWrapper = document.querySelector('.form-wrapper')
+const page2 = document.querySelector('.page2')
+const SignInForm = document.querySelector(".login");
+
 //ref til kolleksjon
 const colRefBlogs = collection(db, "Blogs");
 
 //hente ut den tomme diven der data skal skrives ut
-const parentElement = document.getElementById("blogs")
+const parentElement = document.querySelector("#blogs");
 
-//gå gjennom alle docs og skriv ut alle i rekkefølgen til artikkelnummerene
-getDocs(colRefBlogs)
-.then((snapshot) => {
-    let blog = []
-    snapshot.docs.forEach((doc) => {
-        blog.push({ ...doc.data(), id: doc.id });
-        const newDiv = document.createElement('div');
-        newDiv.classList.add("blogs");
-        newDiv.innerHTML += `<h2> ${doc.data().Title} </h2>
-        <br>${doc.data().Text}
-        <br>
-        <br> Skrevet av: ${doc.data().Author} 
-        <br>
-        <br>
-        <br>
-        <br>`;
+//REGISTRER FORM
+const addUserForm = document.querySelector(".Register");
 
-        parentElement.appendChild(newDiv);
-    })
+//Logg ut form
+const logoutButton = document.querySelector('#logout');
 
-})
-//feilmeldinger
-.catch(err => {
-    console.log(err.message);
-});
+//Veileder nav
+const veileder = document.querySelector('.veileder');
 
-//SLETTE BLOGGER
-const deleteBtn = document.querySelector('.delete')
+//Legg til blogger form
+const addForm = document.querySelector('.add');
 
+//Fjern blogger form
+const removeForm = document.querySelector('.remove');
+
+//LIKES 
+const docRef = doc(db, "Blogs", "2GLSGHXy5BAGh4dPrtWQ");
+
+const docSnap = await getDoc(docRef);
+
+let numberOfLikes = docSnap.data().Likes;
+
+
+const likeKnapp = document.querySelector("#tryLike");
 
 
 //sjekke om bruker er logget inn
-document.addEventListener('DOMContentLoaded', (e) => {
+document.addEventListener('DOMContentLoaded', () => {
   let user = localStorage.getItem('user');
   if (user) {
     formWrapper.classList.add('d-none');
@@ -78,42 +81,61 @@ document.addEventListener('DOMContentLoaded', (e) => {
   }
 });
 
+
+//gå gjennom alle docs og skriv ut alle
+await getDocs(colRefBlogs)
+  .then((snapshot) => {
+    let blog = []
+    snapshot.docs.forEach((localDoc) => {
+      blog.push({ ...localDoc.data(), id: localDoc.id });
+      const newDiv = document.createElement('div');
+      newDiv.classList.add("blogs");
+      newDiv.innerHTML += `<h2> ${localDoc.data().Title} </h2>
+        <br>${localDoc.data().Text}
+        <br>
+        <br> Skrevet av: ${localDoc.data().Author} 
+        <br>
+        <br> Likes: ${localDoc.data().Likes}
+        <br>
+        <br>
+        <br>
+        <br>`;
+      parentElement.appendChild(newDiv);
+    })
+
+  })
+  //feilmeldinger
+  .catch(err => {
+    console.log(err.message);
+  });
+
+
 //LOGG INN OG REGISTRERING
-
-//LOGG INN
-const formWrapper = document.querySelector('.form-wrapper')
-const page2 = document.querySelector('.page2')
-const SignInForm = document.querySelector(".login");
-
-
 
 SignInForm.addEventListener("submit", (e) => {
   e.preventDefault();
-
   const email = SignInForm.email.value;
   const password = SignInForm.password.value;
 
   signInWithEmailAndPassword(auth, email, password)
-  .then((cred) => {
-    console.log('user logged in', cred.user);
-    localStorage.setItem("user", cred.user.email); //lager brukeren i local storage
-    SignInForm.reset();
-    formWrapper.classList.add('d-none');
-    page2.classList.remove('d-none');
-    location.reload();
-    
+    .then((cred) => {
+      console.log('user logged in', cred.user);
+      localStorage.setItem("user", cred.user.email); //lager brukeren i local storage
+      SignInForm.reset();
+      formWrapper.classList.add('d-none');
+      page2.classList.remove('d-none');
+      location.reload();
 
-  })
-  .catch((err) => {
-    console.log(err.message)
-  })
+
+    })
+    .catch((err) => {
+      console.log('Error:!', err.message)
+    })
 
 });
 
 //LOGG UT
-const logoutButton = document.querySelector('.logout');
 logoutButton.addEventListener('click', () => {
-console.log('hei');
     signOut(auth)
     .then(() => {console.log('the user signed out')
     localStorage.removeItem("user");
@@ -129,8 +151,6 @@ console.log('hei');
 
 
 //REGISTRER
-const addUserForm = document.querySelector(".Register");
-
 addUserForm.addEventListener("submit", (e) => {
   e.preventDefault();
 
@@ -138,56 +158,63 @@ addUserForm.addEventListener("submit", (e) => {
   const password = addUserForm.password.value;
 
   createUserWithEmailAndPassword(auth, email, password)
-  .then ((cred) => {
-    console.log('user created', cred.user);
-    addUserForm.reset();
-  })
-  .catch((err) => {
-    console.log(err.message);
-  })
-  
+    .then((cred) => {
+      console.log('user created', cred.user);
+      addUserForm.reset();
+    })
+    .catch((err) => {
+      console.log(err.message);
+    })
+
 });
 
 //SJEKK OM ADMIN, DISPLAY VEILEDER
-const veileder = document.querySelector('.veileder');
 let cred = localStorage.getItem('user');
 
-if(cred === 'sanne@bloggis.com') {
+if (cred === 'sanne@bloggis.com') {
   console.log('is admin');
   veileder.classList.remove('d-none');
 };
 
-
 //LEGG TIL BLOGG
-const addForm = document.querySelector('.add');
-
 addForm.addEventListener('submit', (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    addDoc(colRefBlogs, {
-        Title: addForm.Title.value,
-        Author: addForm.Author.value,
-        Text: addForm.Text.value
-    })
-    .then (() => {
-        addForm.reset()
+  addDoc(colRefBlogs, {
+    Title: addForm.Title.value,
+    Author: addForm.Author.value,
+    Text: addForm.Text.value
+  })
+    .then(() => {
+      addForm.reset()
     });
 
 });
 
 //FJERNE BLOGGER
-const removeForm = document.querySelector('.remove');
-
 removeForm.addEventListener('submit', (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const docRef = doc(db, "Blogs", removeForm.bloggID.value)
+  const docRef = doc(db, "Blogs", removeForm.bloggID.value)
 
-    deleteDoc(docRef)
-    .then (() => {
-        removeForm.reset()
-        console.log("item removed");
+  deleteDoc(docRef)
+    .then(() => {
+      removeForm.reset()
+      console.log("item removed");
     });
 
 });
+
+//LIKES ISH
+likeKnapp.addEventListener('click', () => {
+  console.log('button clicked')
+  const like = { Likes: numberOfLikes + 1 };
+updateDoc(docRef, like)
+  .then(docRef => {
+    console.log('doc updated');
+    location.reload();
+  }).catch(err => {
+    console.log(err.message)
+  })
+})
 

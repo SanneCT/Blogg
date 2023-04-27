@@ -14,9 +14,9 @@
 /*!*********************!*\
   !*** ./firebase.js ***!
   \*********************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var firebase_app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! firebase/app */ \"./node_modules/firebase/app/dist/esm/index.esm.js\");\n/* harmony import */ var firebase_firestore__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! firebase/firestore */ \"./node_modules/firebase/firestore/dist/esm/index.esm.js\");\n/* harmony import */ var firebase_auth__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! firebase/auth */ \"./node_modules/firebase/auth/dist/esm/index.esm.js\");\n\r\n\r\n\r\n\r\n\r\nconst firebaseConfig = {\r\n    apiKey: \"AIzaSyALRpbFfVILVzQC_sC_QfTM4S0k_44-QQk\",\r\n    authDomain: \"minblogg-4b922.firebaseapp.com\",\r\n    projectId: \"minblogg-4b922\",\r\n    storageBucket: \"minblogg-4b922.appspot.com\",\r\n    messagingSenderId: \"23369904460\",\r\n    appId: \"1:23369904460:web:e564988f54f9b03923dfe9\"\r\n  };\r\n\r\n  // Initialize Firebase\r\n(0,firebase_app__WEBPACK_IMPORTED_MODULE_0__.initializeApp)(firebaseConfig);\r\n\r\n//init service\r\nconst db = (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_1__.getFirestore)();\r\nconst auth = (0,firebase_auth__WEBPACK_IMPORTED_MODULE_2__.getAuth)();\r\n\r\n//ref til kolleksjon\r\nconst colRefBlogs = (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_1__.collection)(db, \"Blogs\");\r\n\r\n//hente ut den tomme diven der data skal skrives ut\r\nconst parentElement = document.getElementById(\"blogs\")\r\n\r\n//gå gjennom alle docs og skriv ut alle i rekkefølgen til artikkelnummerene\r\n;(0,firebase_firestore__WEBPACK_IMPORTED_MODULE_1__.getDocs)(colRefBlogs)\r\n.then((snapshot) => {\r\n    let blog = []\r\n    snapshot.docs.forEach((doc) => {\r\n        blog.push({ ...doc.data(), id: doc.id });\r\n        const newDiv = document.createElement('div');\r\n        newDiv.classList.add(\"blogs\");\r\n        newDiv.innerHTML += `<h2> ${doc.data().Title} </h2>\r\n        <br>${doc.data().Text}\r\n        <br>\r\n        <br> Skrevet av: ${doc.data().Author} \r\n        <br>\r\n        <br>\r\n        <br>\r\n        <br>`;\r\n\r\n        parentElement.appendChild(newDiv);\r\n    })\r\n\r\n})\r\n//feilmeldinger\r\n.catch(err => {\r\n    console.log(err.message);\r\n});\r\n\r\n//SLETTE BLOGGER\r\nconst deleteBtn = document.querySelector('.delete')\r\n\r\n\r\n\r\n//sjekke om bruker er logget inn\r\ndocument.addEventListener('DOMContentLoaded', (e) => {\r\n  let user = localStorage.getItem('user');\r\n  if (user) {\r\n    formWrapper.classList.add('d-none');\r\n    page2.classList.remove('d-none');\r\n    logoutButton.classList.remove('d-none');\r\n  }\r\n});\r\n\r\n//LOGG INN OG REGISTRERING\r\n\r\n//LOGG INN\r\nconst formWrapper = document.querySelector('.form-wrapper')\r\nconst page2 = document.querySelector('.page2')\r\nconst SignInForm = document.querySelector(\".login\");\r\n\r\n\r\n\r\nSignInForm.addEventListener(\"submit\", (e) => {\r\n  e.preventDefault();\r\n\r\n  const email = SignInForm.email.value;\r\n  const password = SignInForm.password.value;\r\n\r\n  (0,firebase_auth__WEBPACK_IMPORTED_MODULE_2__.signInWithEmailAndPassword)(auth, email, password)\r\n  .then((cred) => {\r\n    console.log('user logged in', cred.user);\r\n    localStorage.setItem(\"user\", cred.user.email); //lager brukeren i local storage\r\n    SignInForm.reset();\r\n    formWrapper.classList.add('d-none');\r\n    page2.classList.remove('d-none');\r\n    location.reload();\r\n    \r\n\r\n  })\r\n  .catch((err) => {\r\n    console.log(err.message)\r\n  })\r\n\r\n});\r\n\r\n//LOGG UT\r\nconst logoutButton = document.querySelector('.logout');\r\nlogoutButton.addEventListener('click', () => {\r\nconsole.log('hei');\r\n    (0,firebase_auth__WEBPACK_IMPORTED_MODULE_2__.signOut)(auth)\r\n    .then(() => {console.log('the user signed out')\r\n    localStorage.removeItem(\"user\");\r\n    formWrapper.classList.remove('d-none');\r\n    page2.classList.add('d-none'); \r\n    location.reload();\r\n})\r\n.catch((err) => {\r\n    console.log(err.message);\r\n})\r\n\r\n})\r\n\r\n\r\n//REGISTRER\r\nconst addUserForm = document.querySelector(\".Register\");\r\n\r\naddUserForm.addEventListener(\"submit\", (e) => {\r\n  e.preventDefault();\r\n\r\n  const email = addUserForm.email.value;\r\n  const password = addUserForm.password.value;\r\n\r\n  (0,firebase_auth__WEBPACK_IMPORTED_MODULE_2__.createUserWithEmailAndPassword)(auth, email, password)\r\n  .then ((cred) => {\r\n    console.log('user created', cred.user);\r\n    addUserForm.reset();\r\n  })\r\n  .catch((err) => {\r\n    console.log(err.message);\r\n  })\r\n  \r\n});\r\n\r\n//SJEKK OM ADMIN, DISPLAY VEILEDER\r\nconst veileder = document.querySelector('.veileder');\r\nlet cred = localStorage.getItem('user');\r\n\r\nif(cred === 'sanne@bloggis.com') {\r\n  console.log('is admin');\r\n  veileder.classList.remove('d-none');\r\n};\r\n\r\n\r\n//LEGG TIL BLOGG\r\nconst addForm = document.querySelector('.add');\r\n\r\naddForm.addEventListener('submit', (e) => {\r\n    e.preventDefault();\r\n\r\n    (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_1__.addDoc)(colRefBlogs, {\r\n        Title: addForm.Title.value,\r\n        Author: addForm.Author.value,\r\n        Text: addForm.Text.value\r\n    })\r\n    .then (() => {\r\n        addForm.reset()\r\n    });\r\n\r\n});\r\n\r\n//FJERNE BLOGGER\r\nconst removeForm = document.querySelector('.remove');\r\n\r\nremoveForm.addEventListener('submit', (e) => {\r\n    e.preventDefault();\r\n\r\n    const docRef = (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_1__.doc)(db, \"Blogs\", removeForm.bloggID.value)\r\n\r\n    ;(0,firebase_firestore__WEBPACK_IMPORTED_MODULE_1__.deleteDoc)(docRef)\r\n    .then (() => {\r\n        removeForm.reset()\r\n        console.log(\"item removed\");\r\n    });\r\n\r\n});\r\n\r\n\n\n//# sourceURL=webpack://blogg/./firebase.js?");
+eval("__webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {\n__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var firebase_app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! firebase/app */ \"./node_modules/firebase/app/dist/esm/index.esm.js\");\n/* harmony import */ var firebase_firestore__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! firebase/firestore */ \"./node_modules/firebase/firestore/dist/esm/index.esm.js\");\n/* harmony import */ var firebase_auth__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! firebase/auth */ \"./node_modules/firebase/auth/dist/esm/index.esm.js\");\n\r\n\r\n\r\n\r\n\r\nconst firebaseConfig = {\r\n  apiKey: \"AIzaSyALRpbFfVILVzQC_sC_QfTM4S0k_44-QQk\",\r\n  authDomain: \"minblogg-4b922.firebaseapp.com\",\r\n  projectId: \"minblogg-4b922\",\r\n  storageBucket: \"minblogg-4b922.appspot.com\",\r\n  messagingSenderId: \"23369904460\",\r\n  appId: \"1:23369904460:web:e564988f54f9b03923dfe9\"\r\n};\r\n\r\n// Initialize Firebase\r\n(0,firebase_app__WEBPACK_IMPORTED_MODULE_0__.initializeApp)(firebaseConfig);\r\n\r\n//init service\r\nconst db = (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_1__.getFirestore)();\r\nconst auth = (0,firebase_auth__WEBPACK_IMPORTED_MODULE_2__.getAuth)();\r\n\r\n//LOGG INN\r\nconst formWrapper = document.querySelector('.form-wrapper')\r\nconst page2 = document.querySelector('.page2')\r\nconst SignInForm = document.querySelector(\".login\");\r\n\r\n//ref til kolleksjon\r\nconst colRefBlogs = (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_1__.collection)(db, \"Blogs\");\r\n\r\n//hente ut den tomme diven der data skal skrives ut\r\nconst parentElement = document.querySelector(\"#blogs\");\r\n\r\n//REGISTRER FORM\r\nconst addUserForm = document.querySelector(\".Register\");\r\n\r\n//Logg ut form\r\nconst logoutButton = document.querySelector('#logout');\r\n\r\n//Veileder nav\r\nconst veileder = document.querySelector('.veileder');\r\n\r\n//Legg til blogger form\r\nconst addForm = document.querySelector('.add');\r\n\r\n//Fjern blogger form\r\nconst removeForm = document.querySelector('.remove');\r\n\r\n//LIKES \r\nconst docRef = (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_1__.doc)(db, \"Blogs\", \"2GLSGHXy5BAGh4dPrtWQ\");\r\n\r\nconst docSnap = await (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_1__.getDoc)(docRef);\r\n\r\nlet numberOfLikes = docSnap.data().Likes;\r\n\r\n\r\nconst likeKnapp = document.querySelector(\"#tryLike\");\r\n\r\n\r\n//sjekke om bruker er logget inn\r\ndocument.addEventListener('DOMContentLoaded', () => {\r\n  let user = localStorage.getItem('user');\r\n  if (user) {\r\n    formWrapper.classList.add('d-none');\r\n    page2.classList.remove('d-none');\r\n    logoutButton.classList.remove('d-none');\r\n  }\r\n});\r\n\r\n\r\n//gå gjennom alle docs og skriv ut alle\r\nawait (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_1__.getDocs)(colRefBlogs)\r\n  .then((snapshot) => {\r\n    let blog = []\r\n    snapshot.docs.forEach((localDoc) => {\r\n      blog.push({ ...localDoc.data(), id: localDoc.id });\r\n      const newDiv = document.createElement('div');\r\n      newDiv.classList.add(\"blogs\");\r\n      newDiv.innerHTML += `<h2> ${localDoc.data().Title} </h2>\r\n        <br>${localDoc.data().Text}\r\n        <br>\r\n        <br> Skrevet av: ${localDoc.data().Author} \r\n        <br>\r\n        <br> Likes: ${localDoc.data().Likes}\r\n        <br>\r\n        <br>\r\n        <br>\r\n        <br>`;\r\n      parentElement.appendChild(newDiv);\r\n    })\r\n\r\n  })\r\n  //feilmeldinger\r\n  .catch(err => {\r\n    console.log(err.message);\r\n  });\r\n\r\n\r\n//LOGG INN OG REGISTRERING\r\n\r\nSignInForm.addEventListener(\"submit\", (e) => {\r\n  e.preventDefault();\r\n  const email = SignInForm.email.value;\r\n  const password = SignInForm.password.value;\r\n\r\n  (0,firebase_auth__WEBPACK_IMPORTED_MODULE_2__.signInWithEmailAndPassword)(auth, email, password)\r\n    .then((cred) => {\r\n      console.log('user logged in', cred.user);\r\n      localStorage.setItem(\"user\", cred.user.email); //lager brukeren i local storage\r\n      SignInForm.reset();\r\n      formWrapper.classList.add('d-none');\r\n      page2.classList.remove('d-none');\r\n      location.reload();\r\n\r\n\r\n    })\r\n    .catch((err) => {\r\n      console.log('Error:!', err.message)\r\n    })\r\n\r\n});\r\n\r\n//LOGG UT\r\nlogoutButton.addEventListener('click', () => {\r\n    (0,firebase_auth__WEBPACK_IMPORTED_MODULE_2__.signOut)(auth)\r\n    .then(() => {console.log('the user signed out')\r\n    localStorage.removeItem(\"user\");\r\n    formWrapper.classList.remove('d-none');\r\n    page2.classList.add('d-none'); \r\n    location.reload();\r\n})\r\n.catch((err) => {\r\n    console.log(err.message);\r\n})\r\n\r\n})\r\n\r\n\r\n//REGISTRER\r\naddUserForm.addEventListener(\"submit\", (e) => {\r\n  e.preventDefault();\r\n\r\n  const email = addUserForm.email.value;\r\n  const password = addUserForm.password.value;\r\n\r\n  (0,firebase_auth__WEBPACK_IMPORTED_MODULE_2__.createUserWithEmailAndPassword)(auth, email, password)\r\n    .then((cred) => {\r\n      console.log('user created', cred.user);\r\n      addUserForm.reset();\r\n    })\r\n    .catch((err) => {\r\n      console.log(err.message);\r\n    })\r\n\r\n});\r\n\r\n//SJEKK OM ADMIN, DISPLAY VEILEDER\r\nlet cred = localStorage.getItem('user');\r\n\r\nif (cred === 'sanne@bloggis.com') {\r\n  console.log('is admin');\r\n  veileder.classList.remove('d-none');\r\n};\r\n\r\n//LEGG TIL BLOGG\r\naddForm.addEventListener('submit', (e) => {\r\n  e.preventDefault();\r\n\r\n  (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_1__.addDoc)(colRefBlogs, {\r\n    Title: addForm.Title.value,\r\n    Author: addForm.Author.value,\r\n    Text: addForm.Text.value\r\n  })\r\n    .then(() => {\r\n      addForm.reset()\r\n    });\r\n\r\n});\r\n\r\n//FJERNE BLOGGER\r\nremoveForm.addEventListener('submit', (e) => {\r\n  e.preventDefault();\r\n\r\n  const docRef = (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_1__.doc)(db, \"Blogs\", removeForm.bloggID.value)\r\n\r\n  ;(0,firebase_firestore__WEBPACK_IMPORTED_MODULE_1__.deleteDoc)(docRef)\r\n    .then(() => {\r\n      removeForm.reset()\r\n      console.log(\"item removed\");\r\n    });\r\n\r\n});\r\n\r\n//LIKES ISH\r\nlikeKnapp.addEventListener('click', () => {\r\n  console.log('button clicked')\r\n  const like = { Likes: numberOfLikes + 1 };\r\n(0,firebase_firestore__WEBPACK_IMPORTED_MODULE_1__.updateDoc)(docRef, like)\r\n  .then(docRef => {\r\n    console.log('doc updated');\r\n    location.reload();\r\n  }).catch(err => {\r\n    console.log(err.message)\r\n  })\r\n})\r\n\r\n\n__webpack_async_result__();\n} catch(e) { __webpack_async_result__(e); } }, 1);\n\n//# sourceURL=webpack://blogg/./firebase.js?");
 
 /***/ }),
 
@@ -187,6 +187,75 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /******/ 	}
 /******/ 	
 /************************************************************************/
+/******/ 	/* webpack/runtime/async module */
+/******/ 	(() => {
+/******/ 		var webpackQueues = typeof Symbol === "function" ? Symbol("webpack queues") : "__webpack_queues__";
+/******/ 		var webpackExports = typeof Symbol === "function" ? Symbol("webpack exports") : "__webpack_exports__";
+/******/ 		var webpackError = typeof Symbol === "function" ? Symbol("webpack error") : "__webpack_error__";
+/******/ 		var resolveQueue = (queue) => {
+/******/ 			if(queue && !queue.d) {
+/******/ 				queue.d = 1;
+/******/ 				queue.forEach((fn) => (fn.r--));
+/******/ 				queue.forEach((fn) => (fn.r-- ? fn.r++ : fn()));
+/******/ 			}
+/******/ 		}
+/******/ 		var wrapDeps = (deps) => (deps.map((dep) => {
+/******/ 			if(dep !== null && typeof dep === "object") {
+/******/ 				if(dep[webpackQueues]) return dep;
+/******/ 				if(dep.then) {
+/******/ 					var queue = [];
+/******/ 					queue.d = 0;
+/******/ 					dep.then((r) => {
+/******/ 						obj[webpackExports] = r;
+/******/ 						resolveQueue(queue);
+/******/ 					}, (e) => {
+/******/ 						obj[webpackError] = e;
+/******/ 						resolveQueue(queue);
+/******/ 					});
+/******/ 					var obj = {};
+/******/ 					obj[webpackQueues] = (fn) => (fn(queue));
+/******/ 					return obj;
+/******/ 				}
+/******/ 			}
+/******/ 			var ret = {};
+/******/ 			ret[webpackQueues] = x => {};
+/******/ 			ret[webpackExports] = dep;
+/******/ 			return ret;
+/******/ 		}));
+/******/ 		__webpack_require__.a = (module, body, hasAwait) => {
+/******/ 			var queue;
+/******/ 			hasAwait && ((queue = []).d = 1);
+/******/ 			var depQueues = new Set();
+/******/ 			var exports = module.exports;
+/******/ 			var currentDeps;
+/******/ 			var outerResolve;
+/******/ 			var reject;
+/******/ 			var promise = new Promise((resolve, rej) => {
+/******/ 				reject = rej;
+/******/ 				outerResolve = resolve;
+/******/ 			});
+/******/ 			promise[webpackExports] = exports;
+/******/ 			promise[webpackQueues] = (fn) => (queue && fn(queue), depQueues.forEach(fn), promise["catch"](x => {}));
+/******/ 			module.exports = promise;
+/******/ 			body((deps) => {
+/******/ 				currentDeps = wrapDeps(deps);
+/******/ 				var fn;
+/******/ 				var getResult = () => (currentDeps.map((d) => {
+/******/ 					if(d[webpackError]) throw d[webpackError];
+/******/ 					return d[webpackExports];
+/******/ 				}))
+/******/ 				var promise = new Promise((resolve) => {
+/******/ 					fn = () => (resolve(getResult));
+/******/ 					fn.r = 0;
+/******/ 					var fnQueue = (q) => (q !== queue && !depQueues.has(q) && (depQueues.add(q), q && !q.d && (fn.r++, q.push(fn))));
+/******/ 					currentDeps.map((dep) => (dep[webpackQueues](fnQueue)));
+/******/ 				});
+/******/ 				return fn.r ? promise : getResult();
+/******/ 			}, (err) => ((err ? reject(promise[webpackError] = err) : outerResolve(exports)), resolveQueue(queue)));
+/******/ 			queue && (queue.d = 0);
+/******/ 		};
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
 /******/ 		// define getter functions for harmony exports
